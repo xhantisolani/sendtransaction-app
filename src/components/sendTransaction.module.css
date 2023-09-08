@@ -1,0 +1,116 @@
+.inputContainer {
+    display: flex;
+    align-items: center; /* Vertically align items in the container */
+   }
+   .input {
+       flex: 1; /* Take up remaining space (70%) */
+       padding: 10px;
+       margin: 5px;
+       border: none;
+       border-radius: 5px;
+       font-size: 16px;
+       width: 90%;
+
+       padding: 0.5rem 1rem;
+       font-weight: bold;
+       letter-spacing: 0.05em;
+       border: none;
+       border-radius: 0.25rem;
+   }
+
+   .modalBtn {
+       width: 30%; /* Set button width to 30% */
+       background-color: #0bcc3b;
+       color: whitesmoke;
+       cursor: pointer;
+       padding: 10px;
+       margin: 5px;
+       border: none;
+       border-radius: 5px;
+       font-size: 16px;
+       float: right;
+
+       padding: 0.5rem 1rem;
+       font-weight: bold;
+       letter-spacing: 0.05em;
+       border: none;
+       border-radius: 0.25rem;
+   }
+
+   .button {
+       background-color: #ffe400;
+       color: whitesmoke;
+       cursor: pointer;
+       padding: 10px;
+       margin: 5px;
+       border: none;
+       border-radius: 5px;
+       font-size: 16px;
+       width: 100%;
+
+       padding: 0.5rem 1rem;
+       font-weight: bold;
+       letter-spacing: 0.05em;
+       border: none;
+       border-radius: 0.25rem;
+   }
+
+   .button:hover {
+       background-color: #a0931b;
+   }
+.button:active{
+    background-color: #3f0abb;
+}
+   /* Styles for the card component */
+   .sendCard {
+       background-color: #FFFFFF;
+       border: 1px solid #E5E5E5;
+       border-radius: 10px;
+       padding: 20px;
+       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+       color: #000;
+       font-weight: bold;
+
+       padding: 2rem;
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       border-radius: 0.75rem;
+       display: flex;
+       flex-direction: column;
+       gap: 2rem;
+       width: 400px;
+   }
+
+   /* Styles for card title and content */
+   .sendCard-title {
+       font-size: 24px;
+       font-weight: bold;
+       margin-bottom: 10px;
+   }
+
+   .sendCcard-content {
+       font-size: 16px;
+       margin-bottom: 10px;
+   }
+   
+.tokenContainer {
+padding: 0.5rem 1rem;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+background-color: var(--tertiary-background-color);
+border-radius: 0 1.25rem 1.25rem 0;
+float: right;
+}
+
+.tokenIcon {
+width: 1.5rem;
+height: 1.5rem;
+}
+
+.tokenSymbol {
+font-size: 0.75rem;
+line-height: 1.5;
+}

@@ -7,20 +7,23 @@ import {
   http,
   getContract,
   parseEther,
+  Address,
 } from 'viem';
 import Profile from './Profile';
 import SelectToken from '../modal/SelectToken'; // Import the SelectToken component
 import { erc20ABI, useAccount, usePrepareSendTransaction, useSendTransaction, useWaitForTransaction } from 'wagmi';
-import { goerli } from 'viem/chains'
+import { mainnet } from 'viem/chains'
 import { useState } from 'react';
+import { wagmiAbi } from '../utils/abis/wagmiAbi';
 
 export function SendTransaction() {
 
   const [sendToAddress, setSendToAddress] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [selectedTokenSymbol, setSelectedTokenSymbol] = useState<string>('');
-  const [selectedTokenContractAddress, setSelectedTokenContractAddress] = useState<string>('');
+  const [selectedTokenContractAddress, setSelectedTokenContractAddress] = useState<Address>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  
   const { config } = usePrepareSendTransaction({
     to: sendToAddress,
     value: amount ? parseEther(amount) : undefined,  })
@@ -29,30 +32,29 @@ export function SendTransaction() {
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
-  })
+  }) 
+   
   // token options
   const tokenOptions = [
-    { symbol: 'WETH', contractAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' }, //actual weth address
-    { symbol: 'goerli ETH', contractAddress: '0xdD69DB25F6D620A7baD3023c5d32761D353D3De9' }, //actual usdc address
-    { symbol: 'ZARP', contractAddress: '0xb755506531786C8aC63B756BaB1ac387bACB0C04' }, //actual zarp address (changed here)
+    { symbol: 'WETH', contractAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' as Address }, //actual weth address
+    { symbol: 'goerli ETH', contractAddress: '0xdD69DB25F6D620A7baD3023c5d32761D353D3De9' as Address }, //actual usdc address
+    { symbol: 'ZARP', contractAddress: '0xb755506531786C8aC63B756BaB1ac387bACB0C04' as Address}, //actual zarp address (changed here)
     // Add more tokens as needed
-  ];
-  
+  ];  
 
   // Other contract functions
   const publicClient = createPublicClient({
-    chain: goerli,
+    chain: mainnet,
     transport: http(),
   });
 
-  const walletclient = createWalletClient({
-    chain: goerli,
+  const walletClient = createWalletClient({
+    chain: mainnet,
     transport: custom(window.ethereum),
   });
 
   // send Token Function
-  // send Token Function
-const sendToken = async () => {
+  const sendToken = async () => {
     console.log('sendToken function called');
     const userEnteredAddress = sendToAddress.trim();
     const userEnteredAmount = amount.trim();
@@ -75,44 +77,55 @@ const sendToken = async () => {
       ? userEnteredAddress
       : `0x${userEnteredAddress}`;
   
+    if (!selectedTokenContractAddress) {
+      console.error('No token selected');
+      return;
+    }
+  
     try {
       const contract = getContract({
-        address: `0x${selectedTokenContractAddress}` as `0x${string}`,
-        abi: erc20ABI,
+        address: selectedTokenContractAddress,
+        abi: wagmiAbi,
         publicClient,
+        walletClient
       });
   
       const argsTransfer: [`0x${string}`, bigint] = [
         formattedAddress as `0x${string}`,
         BigInt(amount),
-      ];
-  
-      // Simulate the token transfer operation
-      const simulatedResult = await contract.simulate.transfer(argsTransfer);
-             contract.simulate.approve(argsTransfer);
-        
-     //walletclient.writeContract(simulatedResult.request.functionName)
+      ];  
+      const [address] = await walletClient.getAddresses() 
 
-      // Check if the simulated result indicates a successful transfer
-      if (simulatedResult.result) {
-        // If the simulation was successful, proceed to send the actual transaction
-        try {
-          //const { hash } = sendTransaction?.name ;
-          const results = simulatedResult.request.functionName;
-          // Handle the transaction hash and success message here
-          //console.log('Transaction Hash:', hash);
-          console.log('Transaction Sent Successfully!', results);
-        } catch (error) {
-          console.error('Error sending transaction:', error);
-        }
+      const transferOptions = {
+        chain: mainnet, // Replace with the desired chain or set it to null
+        gas: BigInt('100000'), // Use BigInt to define gas as a bigint
+        nonce: 0, // Replace with the desired nonce value
+        value: undefined,
+        gasPrice: undefined,
+        maxFeePerGas: undefined,
+        maxPriorityFeePerGas: undefined,
+        type: 'eip1559', // Update the type property to "eip1559"
+        accessList: undefined,
+        account: address,
+        dataSuffix: undefined,
+      };           
+
+      // Simulate the token transfer operation
+     const simulatedResult = await contract.write.transfer(argsTransfer, transferOptions);
+      
+     
+      if (simulatedResult) {
+        // If the simulation was successful        
+          console.log('Transaction Sent Successfully!');
+       
       } else {
         console.error('Token transfer simulation failed:');
         // You can also notify the user with a message or UI feedback
-      }
+      } 
     } catch (error) {
       console.error('Error preparing token transfer:', error);
       // You can also notify the user with a message or UI feedback
-    }
+    } 
   };
   
 

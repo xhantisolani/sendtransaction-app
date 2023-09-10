@@ -8,7 +8,7 @@ import {
   import styles from './Profile.module.css'
 
   export function Profile() {
-    const { address, connector, isConnected } = useAccount()
+    const {  address, connector, isConnected } = useAccount()
    const { data: ensAvatar } = useEnsAvatar({ })
     const { data: ensName } = useEnsName({ address })
     const { connect, connectors, error, isLoading, pendingConnector } =
